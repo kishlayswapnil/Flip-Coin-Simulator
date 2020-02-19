@@ -1,6 +1,8 @@
 #!/bin/bash -x
 echo xxxxxxxxxxWELCOMExxxxTOxxxxFLIPxxxxCOINxxxxSIMULATORxxxxxxxxxxx
 
+#declareing a dictionary to store the count
+declare -A dictionary
 read -p "Enter the range for fliping the coin: " ranges
 read -p "Enter the choice:
 			1. Singlet
@@ -20,6 +22,13 @@ function Percentage()
 		echo "Percentage of $keyCount is: ${dictionary[$keyCount]} "
 	done
 }
+function sorted() {
+	for k in ${!dictionary[@]}
+	do
+		echo $k '-' ${dictionary[$k]}
+	done |
+	sort -rn -k3
+}
 #Calculating count for each and every possibility.
 function triplet() {
 	#Constants declared.
@@ -29,8 +38,6 @@ function triplet() {
 	tails=0
 	range=$1
 	choice=$2
-	#declareing a dictionary to store the count
-	declare -A dictionary
 	#logic for the operation.
 	for (( count1=1; count1<=range; count1++))
 	do
@@ -56,6 +63,8 @@ function triplet() {
 	echo ${!dictionary[@]}
 	echo ${dictionary[@]}
 	echo "$(Percentage $ranges)"
+	echo "$(sorted)"
+	echo "Winner is:-  $(sorted | head -1)"
 }
 #For displaying the result of percentage.
 if (( $choose > 0 && $choose < 4 ))
