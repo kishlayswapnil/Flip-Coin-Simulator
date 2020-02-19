@@ -1,63 +1,66 @@
 #!/bin/bash -x
 echo xxxxxxxxxxWELCOMExxxxTOxxxxFLIPxxxxCOINxxxxSIMULATORxxxxxxxxxxx
 
-#Constants declared.
-CHECK=1
-DOUBLE=2
-#Varriable declared.
-heads=0
-tails=0
-
-read -p "Enter the range for fliping the coin: " range
-#declareing a dictionary to store the count
-declare -A singlet
-declare -A doublet
-#logic for the operation.
+read -p "Enter the range for fliping the coin: " ranges
+read -p "Enter the choice:
+			1. Singlet
+			2. Dublet
+			3. Triplet  " choose
 function flip() {
 	random=$((RANDOM%2))
 	echo $random
 }
-for (( count1=1; count1<=range; count1++))
-do
-	for (( count2=1; count2<=DOUBLE; count2++ ))
-	do
-		result="$(flip)"
-		if (( $result == $CHECK  ))
-		then
-			echo "HEAD"
-			singlet[$count1]=H
-			coin+=H
-			((heads++))
-		else
-			echo "TAIL"
-			singlet[$count1]=T
-			((tails++))
-			coin+=T
-		fi
-	done
-	((doublet[$coin]++))
-	coin=""
-done
-echo "Heads count= $heads"
-echo "Tails count= $tails"
-echo ${singlet[@]}
-echo ${!doublet[@]}
-echo ${doublet[@]}
 #calculating the percentage of heads and tails
-headPercent=`echo "scale=4;($heads/$range)*100" | bc`"%"
-	echo "pecentage of heads is: $headPercent"
-tailPercent=`echo "scale=4;($tails/$range)*100" | bc`"%"
-	echo "pecentage of tails is: $tailPercent"
-#Calculating count for each and every possibility.
 function Percentage()
 {
-	ranges=$1
-	for keyCount in ${!doublet[@]}
+	range=$1
+	for keyCount in ${!dictionary[@]}
 	do
-		doublet[$keyCount]=`echo "scale=4; ${doublet[$keyCount]}/$ranges*100" | bc`"%"
-		echo "Percentage of $keyCount is: ${doublet[$keyCount]} "
+		dictionary[$keyCount]=`echo "scale=4; ${dictionary[$keyCount]}/$range*100" | bc`"%"
+		echo "Percentage of $keyCount is: ${dictionary[$keyCount]} "
 	done
 }
+#Calculating count for each and every possibility.
+function triplet() {
+	#Constants declared.
+	CHECK=1
+	#Varriable declared.
+	heads=0
+	tails=0
+	range=$1
+	choice=$2
+	#declareing a dictionary to store the count
+	declare -A dictionary
+	#logic for the operation.
+	for (( count1=1; count1<=range; count1++))
+	do
+		for (( count2=1; count2<=choice; count2++ ))
+		do
+			result="$(flip)"
+			if (( $result == $CHECK  ))
+			then
+				coin+=H
+				((heads++))
+			else
+				((tails++))
+				coin+=T
+			fi
+		done
+#Storing the count for individual key values.
+		((dictionary[$coin]++))
+#Reassiging the key values in coin.
+		coin=""
+	done
+	echo "Heads count= $heads"
+	echo "Tails count= $tails"
+	echo ${!dictionary[@]}
+	echo ${dictionary[@]}
+	echo "$(Percentage $ranges)"
+}
 #For displaying the result of percentage.
-result1=$(Percentage $range)
-	echo "$result1"
+if (( $choose > 0 && $choose < 4 ))
+then
+	echo "$(triplet $ranges $choose)"
+else
+	echo Invalid Choice
+fi
